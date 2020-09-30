@@ -18,7 +18,9 @@ import com.seniortest.api.repositories.CidadeRepository;
 import com.seniortest.api.response.PaginationResponse;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.io.IOException;
 
 @Service
@@ -41,7 +43,8 @@ public class CidadeService {
   public PaginationResponse<CidadeSimpleDTO> getAllPaged(int page) {
     PaginationResponse<CidadeSimpleDTO> response = new PaginationResponse<CidadeSimpleDTO>();
     int size = 20;
-    PageRequest pageRequest = PageRequest.of(page, size, Sort.Direction.ASC, "nome");
+    int offset = page - 1;
+    PageRequest pageRequest = PageRequest.of(offset, size, Sort.Direction.ASC, "nome");
     Page<Cidade> cidades = cidadeRepo.findAll(pageRequest);
     
     response.setData(this.convertToCidadesSimpleDTO(cidades.getContent()));
@@ -55,17 +58,21 @@ public class CidadeService {
   public CidadeDTO searchByCEP(String cepNumber) throws IOException {
     Cidade cidade = cidadeRepo.getCidadeByCEP(cepNumber);
     CidadeDTO cidadeDTO = new CidadeDTO();
+    Cep newCep = new Cep();
     
     if (isNull(cidade)) {
       ViaCepDTO viaCEP = viaCepService.getInforByCEP(cepNumber);
-      cidade = cidadeRepo.save(new Cidade(viaCEP.ibge, viaCEP.localidade));
+      cidade = cidadeRepo.save(new Cidade(Long.parseLong(viaCEP.ibge), viaCEP.localidade));
+      
+      newCep.setNumero(cepNumber);
+      newCep.setCidade(cidade);
 
-      cepRep.save(new Cep(cepNumber, cidade));
+      cepRep.save(newCep);
     }
 
     cidadeDTO.setCodigoIBGE(cidade.getCodigoIBGE());
     cidadeDTO.setNome(cidade.getNome());
-    cidadeDTO.setCeps(this.convertToCepList(cidade));
+    cidadeDTO.setCeps(this.convertToCepList(cidade.getCeps(), newCep.getNumero()));
 
     
     return cidadeDTO;
@@ -78,9 +85,16 @@ public class CidadeService {
     return list;
   }
 
-  public List<String> convertToCepList(Cidade cidade) {
-    List<String> list = new ArrayList<>();
-    cidade.getCeps().forEach(cep -> list.add(cep.getNumero()));
+  public Set<String> convertToCepList(Set<Cep> ceps, String newCep) {
+    Set<String> list = new HashSet<>();
+
+    list.add(newCep);
+
+    if (isNull(ceps)) {
+      return list;
+    }
+
+    ceps.forEach(cep -> list.add(cep.getNumero()));
     return list;
   }
 }

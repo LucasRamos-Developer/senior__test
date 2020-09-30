@@ -1,5 +1,6 @@
 package com.seniortest.api.models;
 
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -16,7 +17,7 @@ public class Cidade {
 
   @Id
   @Column(name="codigo_ibge")
-  private String codigoIBGE;
+  private Long codigoIBGE;
 
   private String nome;
 
@@ -25,16 +26,16 @@ public class Cidade {
 
   public Cidade() {}
 
-  public Cidade(String codigoIBGE, String nome) {
+  public Cidade(Long codigoIBGE, String nome) {
     this.codigoIBGE = codigoIBGE;
     this.nome = nome;
   }
 
-  public String getCodigoIBGE() {
+  public Long getCodigoIBGE() {
     return codigoIBGE;
   }
 
-  public void setCodigoIBGE(String codigoIBGE) {
+  public void setCodigoIBGE(Long codigoIBGE) {
     this.codigoIBGE = codigoIBGE;
   }
 
@@ -52,6 +53,10 @@ public class Cidade {
 
   public void setCeps(Set<Cep> ceps) {
     this.ceps = ceps;
+  }
+
+  public void addCep(Cep e) {
+    this.ceps.add(e);
   }
   
 }

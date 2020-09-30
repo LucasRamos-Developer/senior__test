@@ -30,7 +30,7 @@ public class CidadeController {
   
   @GetMapping
   @ResponseBody
-  public ResponseEntity<PaginationResponse<CidadeSimpleDTO>> getPaged(@RequestParam(name = "page", defaultValue = "0") int page) {
+  public ResponseEntity<PaginationResponse<CidadeSimpleDTO>> getPaged(@RequestParam(name = "page", defaultValue = "1") int page) {
     PaginationResponse<CidadeSimpleDTO> response = cidadeService.getAllPaged(page);
     return ResponseEntity.ok(response);
   }
