@@ -9,7 +9,7 @@ Para executar os testes:
 ```
 mvn test
 ```
-
+<br><br><br><br>
 
 ### Routes
 
@@ -25,7 +25,7 @@ mvn test
 URL de Exemplo:
   `http://localhost:8080/cidades?page=1`
 
-<br><br><br><br><br>
+<br><br>
 
 #### Procurar Cidade por CEP
 
@@ -41,7 +41,7 @@ URL de Exemplo:
 URL de Exemplo:
   `http://localhost:8080/cidades/search?cep=01001000`
 
-<br><br><br><br><br>
+<br><br>
 
 #### Traçar Rota por CEP
 
