@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import com.seniortest.api.dtos.CidadeDTO;
 import com.seniortest.api.dtos.CidadeSimpleDTO;
 import com.seniortest.api.dtos.ViaCepDTO;
+import com.seniortest.api.interfaces.ICidadeWithCepDTO;
 import com.seniortest.api.models.Cep;
 import com.seniortest.api.models.Cidade;
 import com.seniortest.api.repositories.CepRepository;
@@ -18,6 +19,7 @@ import com.seniortest.api.repositories.CidadeRepository;
 import com.seniortest.api.response.PaginationResponse;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -44,7 +46,7 @@ public class CidadeService {
     PaginationResponse<CidadeSimpleDTO> response = new PaginationResponse<CidadeSimpleDTO>();
     int size = 20;
     int offset = page - 1;
-    PageRequest pageRequest = PageRequest.of(offset, size, Sort.Direction.ASC, "nome");
+    PageRequest pageRequest = PageRequest.of(offset                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               , size, Sort.Direction.ASC, "nome");
     Page<Cidade> cidades = cidadeRepo.findAll(pageRequest);
     
     response.setData(this.convertToCidadesSimpleDTO(cidades.getContent()));
@@ -74,14 +76,44 @@ public class CidadeService {
     cidadeDTO.setNome(cidade.getNome());
     cidadeDTO.setCeps(this.convertToCepList(cidade.getCeps(), newCep.getNumero()));
 
-    
     return cidadeDTO;
+  }
+
+
+  public List<CidadeSimpleDTO> getRouteByCeps(List<String> ceps) {
+    HashMap<String,CidadeSimpleDTO> cidades = this.convertToCidadeWithCepDTO(cidadeRepo.getAllByCeps(ceps));
+    return this.getCidadesUniqueList(cidades, ceps);
+  }
+
+
+  public List<CidadeSimpleDTO> getCidadesUniqueList(HashMap<String,CidadeSimpleDTO> cidades, List<String> ceps){
+    
+    List<CidadeSimpleDTO> response = new ArrayList<>();
+    List<Long> codigos = new ArrayList<>();
+    
+    ceps.forEach(cep -> {
+      CidadeSimpleDTO cidade = cidades.get(cep);
+      if (codigos.indexOf(cidade.getCodigoIBGE()) < 0) {
+        codigos.add(cidade.getCodigoIBGE());
+        response.add(cidade); 
+      }
+    });
+
+    return response;
   }
 
 
   public List<CidadeSimpleDTO> convertToCidadesSimpleDTO(List<Cidade> cidades) {
     List<CidadeSimpleDTO> list = new ArrayList<>();
     cidades.forEach(c -> list.add(new CidadeSimpleDTO(c.getCodigoIBGE(), c.getNome())));
+    return list;
+  }
+
+  public HashMap<String,CidadeSimpleDTO> convertToCidadeWithCepDTO(List<ICidadeWithCepDTO> cidades) {
+  HashMap<String,CidadeSimpleDTO> list = new HashMap<>();
+    cidades.forEach(c -> {
+      list.put(c.getCep(), new CidadeSimpleDTO(c.getCodigoIbge(), c.getNome()));
+    });
     return list;
   }
 

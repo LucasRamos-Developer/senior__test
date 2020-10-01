@@ -11,6 +11,8 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 @Entity
 @Table(name="cidade")
 public class Cidade {
@@ -21,6 +23,7 @@ public class Cidade {
 
   private String nome;
 
+  @JsonBackReference
   @OneToMany(mappedBy="cidade", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
   private Set<Cep> ceps;
 
