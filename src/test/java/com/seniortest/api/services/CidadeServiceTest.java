@@ -61,7 +61,7 @@ public class CidadeServiceTest {
 
     CidadeSimpleDTO cidade = list.get(2);
 
-    assertEquals(cidade.getCodigoIBGE(), cidades.get("003").getCodigoIBGE());
+    assertEquals(cidade.getCodigoIBGE(), cidades.get("004").getCodigoIBGE());
   }
   
 }
