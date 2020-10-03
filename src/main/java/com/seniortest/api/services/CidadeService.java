@@ -22,7 +22,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+
+import javax.management.relation.RelationNotFoundException;
+
 import java.io.IOException;
 
 @Service
@@ -37,9 +41,23 @@ public class CidadeService {
   @Autowired
   private ViaCepService viaCepService;
 
-
-  public Cidade save(Cidade cidade){
+  public Cidade save(Cidade cidade) {
     return cidadeRepo.save(cidade);
+  }
+
+  public CidadeDTO findById(Long codigo) throws RelationNotFoundException {
+    Optional<Cidade> cidade = cidadeRepo.findById(codigo);
+    CidadeDTO resp = new CidadeDTO();
+
+    if (!cidade.isPresent()) {
+      throw new RelationNotFoundException();
+    }
+    
+    resp.setCodigoIBGE(cidade.get().getCodigoIBGE());
+    resp.setNome(cidade.get().getNome());
+    resp.setUf(cidade.get().getUf());
+
+    return resp;
   }
 
   public PaginationResponse<CidadeSimpleDTO> getAllPaged(int page) {
@@ -64,18 +82,23 @@ public class CidadeService {
     
     if (isNull(cidade)) {
       ViaCepDTO viaCEP = viaCepService.getInforByCEP(cepNumber);
-      cidade = cidadeRepo.save(new Cidade(Long.parseLong(viaCEP.ibge), viaCEP.localidade));
-      
+      cidade = cidadeRepo.save(
+        new Cidade(
+          Long.parseLong(viaCEP.ibge), 
+          viaCEP.localidade, 
+          viaCEP.uf
+        )
+      );
       newCep.setNumero(cepNumber);
       newCep.setCidade(cidade);
-
       cepRep.save(newCep);
     }
 
     cidadeDTO.setCodigoIBGE(cidade.getCodigoIBGE());
     cidadeDTO.setNome(cidade.getNome());
+    cidadeDTO.setUf(cidade.getUf());
     cidadeDTO.setCeps(this.convertToCepList(cidade.getCeps(), newCep.getNumero()));
-
+    
     return cidadeDTO;
   }
 
@@ -87,10 +110,8 @@ public class CidadeService {
 
 
   public List<CidadeSimpleDTO> getCidadesUniqueList(HashMap<String,CidadeSimpleDTO> cidades, List<String> ceps){
-    
     List<CidadeSimpleDTO> response = new ArrayList<>();
     List<Long> codigos = new ArrayList<>();
-    
     ceps.forEach(cep -> {
       CidadeSimpleDTO cidade = cidades.get(cep);
       if (codigos.indexOf(cidade.getCodigoIBGE()) < 0) {
@@ -98,8 +119,18 @@ public class CidadeService {
         response.add(cidade); 
       }
     });
-
     return response;
+  }
+
+  public List<CidadeSimpleDTO> getFilterByUF(String uf) {
+    List<ICidadeWithCepDTO> cidades = new ArrayList<>();
+    List<CidadeSimpleDTO> list = new ArrayList<>();
+
+    cidades.forEach(c -> {
+      list.add(new CidadeSimpleDTO(c.getCodigoIbge(), c.getNome()));
+    });
+
+    return list;
   }
 
 

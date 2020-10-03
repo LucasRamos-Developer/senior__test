@@ -1,13 +1,22 @@
 package com.seniortest.api.dtos;
 
-import java.util.List;
 import java.util.Set;
 
 public class CidadeDTO {
   
   private Long codigoIBGE;
   private String nome;
+  private String uf;
   private Set<String> ceps;
+  
+  public CidadeDTO() {}
+
+  public CidadeDTO(Long codigoIBGE, String nome, String uf, Set<String> ceps) {
+    this.codigoIBGE = codigoIBGE;
+    this.nome = nome;
+    this.uf = uf;
+    this.ceps = ceps;
+  }
 
   public Long getCodigoIBGE() {
     return codigoIBGE;
@@ -35,5 +44,13 @@ public class CidadeDTO {
 
   public void addCep(String cep) {
     this.ceps.add(cep);
+  }
+
+  public String getUf() {
+    return uf;
+  }
+
+  public void setUf(String uf) {
+    this.uf = uf;
   }
 }
