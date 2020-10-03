@@ -1,23 +1,23 @@
 package com.seniortest.api.dtos;
 
 public class CidadeSimpleDTO {
-  private Long codigoIBGE;
+  private Long codigoIbge;
   private String nome;
 
   public CidadeSimpleDTO(Long codigo, String nome) {
-    this.codigoIBGE = codigo;
+    this.codigoIbge = codigo;
     this.nome = nome;
   }
 
   public CidadeSimpleDTO() {
 }
 
-public Long getCodigoIBGE() {
-    return codigoIBGE;
+public Long getcodigoIbge() {
+    return codigoIbge;
   }
 
-  public void setCodigoIBGE(Long codigoIBGE) {
-    this.codigoIBGE = codigoIBGE;
+  public void setcodigoIbge(Long codigoIbge) {
+    this.codigoIbge = codigoIbge;
   }
 
   public String getNome() {

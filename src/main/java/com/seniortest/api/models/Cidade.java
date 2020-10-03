@@ -7,13 +7,10 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 @Table(name="cidade")
@@ -21,7 +18,7 @@ public class Cidade {
 
   @Id
   @Column(name="codigo_ibge")
-  private Long codigoIBGE;
+  private Long codigoIbge;
 
   private String nome;
 
@@ -33,18 +30,18 @@ public class Cidade {
 
   public Cidade() {}
 
-  public Cidade(Long codigoIBGE, String nome, String uf) {
-    this.codigoIBGE = codigoIBGE;
+  public Cidade(Long codigoIbge, String nome, String uf) {
+    this.codigoIbge = codigoIbge;
     this.nome = nome;
     this.uf = uf;
   }
 
-  public Long getCodigoIBGE() {
-    return codigoIBGE;
+  public Long getcodigoIbge() {
+    return codigoIbge;
   }
 
-  public void setCodigoIBGE(Long codigoIBGE) {
-    this.codigoIBGE = codigoIBGE;
+  public void setcodigoIbge(Long codigoIbge) {
+    this.codigoIbge = codigoIbge;
   }
 
   public String getNome() {

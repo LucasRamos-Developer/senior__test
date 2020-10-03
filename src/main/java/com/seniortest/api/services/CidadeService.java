@@ -41,8 +41,17 @@ public class CidadeService {
   @Autowired
   private ViaCepService viaCepService;
 
-  public Cidade save(Cidade cidade) {
-    return cidadeRepo.save(cidade);
+  public CidadeDTO save(Cidade cidade) {
+    Cidade newCidade = cidadeRepo.save(cidade);
+    CidadeDTO cidadeDTO = new CidadeDTO();
+    Set<String> cepsList = this.convertToCepList(newCidade.getCeps(), null);
+
+    cidadeDTO.setCeps(cepsList);
+    cidadeDTO.setcodigoIbge(newCidade.getcodigoIbge());
+    cidadeDTO.setNome(newCidade.getNome());
+    cidadeDTO.setUf(newCidade.getUf());
+
+    return cidadeDTO;
   }
 
   public CidadeDTO findById(Long codigo) throws RelationNotFoundException {
@@ -52,12 +61,37 @@ public class CidadeService {
     if (!cidade.isPresent()) {
       throw new RelationNotFoundException();
     }
+
+    Cidade currentCidade = cidade.get();
     
-    resp.setCodigoIBGE(cidade.get().getCodigoIBGE());
-    resp.setNome(cidade.get().getNome());
-    resp.setUf(cidade.get().getUf());
+    resp.setcodigoIbge(currentCidade.getcodigoIbge());
+    resp.setNome(currentCidade.getNome());
+    resp.setUf(currentCidade.getUf());
 
     return resp;
+  }
+
+  public CidadeDTO updateById (Long codigo, Cidade newCidade) throws RelationNotFoundException {
+    Optional<Cidade> cidade = cidadeRepo.findById(codigo);
+
+    if (!cidade.isPresent()) {
+      throw new RelationNotFoundException();
+    }
+
+    Cidade currentCidade = cidade.get();
+    
+    currentCidade.setNome(newCidade.getNome());
+    currentCidade.setcodigoIbge(newCidade.getcodigoIbge());
+    currentCidade.setUf(newCidade.getUf());
+
+    CidadeDTO cidadeDTO = new CidadeDTO();
+
+    cidadeDTO.setcodigoIbge(currentCidade.getcodigoIbge());
+    cidadeDTO.setNome(currentCidade.getNome());
+    cidadeDTO.setUf(currentCidade.getUf());
+    cidadeDTO.setCeps(this.convertToCepList(newCidade.getCeps(), null));
+
+    return cidadeDTO;
   }
 
   public PaginationResponse<CidadeSimpleDTO> getAllPaged(int page) {
@@ -94,7 +128,7 @@ public class CidadeService {
       cepRep.save(newCep);
     }
 
-    cidadeDTO.setCodigoIBGE(cidade.getCodigoIBGE());
+    cidadeDTO.setcodigoIbge(cidade.getcodigoIbge());
     cidadeDTO.setNome(cidade.getNome());
     cidadeDTO.setUf(cidade.getUf());
     cidadeDTO.setCeps(this.convertToCepList(cidade.getCeps(), newCep.getNumero()));
@@ -114,8 +148,8 @@ public class CidadeService {
     List<Long> codigos = new ArrayList<>();
     ceps.forEach(cep -> {
       CidadeSimpleDTO cidade = cidades.get(cep);
-      if (codigos.indexOf(cidade.getCodigoIBGE()) < 0) {
-        codigos.add(cidade.getCodigoIBGE());
+      if (codigos.indexOf(cidade.getcodigoIbge()) < 0) {
+        codigos.add(cidade.getcodigoIbge());
         response.add(cidade); 
       }
     });
@@ -127,7 +161,7 @@ public class CidadeService {
     List<CidadeSimpleDTO> list = new ArrayList<>();
 
     cidades.forEach(c -> {
-      list.add(new CidadeSimpleDTO(c.getCodigoIbge(), c.getNome()));
+      list.add(new CidadeSimpleDTO(c.getcodigoIbge(), c.getNome()));
     });
 
     return list;
@@ -136,14 +170,14 @@ public class CidadeService {
 
   public List<CidadeSimpleDTO> convertToCidadesSimpleDTO(List<Cidade> cidades) {
     List<CidadeSimpleDTO> list = new ArrayList<>();
-    cidades.forEach(c -> list.add(new CidadeSimpleDTO(c.getCodigoIBGE(), c.getNome())));
+    cidades.forEach(c -> list.add(new CidadeSimpleDTO(c.getcodigoIbge(), c.getNome())));
     return list;
   }
 
   public HashMap<String,CidadeSimpleDTO> convertToCidadeWithCepDTO(List<ICidadeWithCepDTO> cidades) {
   HashMap<String,CidadeSimpleDTO> list = new HashMap<>();
     cidades.forEach(c -> {
-      list.put(c.getCep(), new CidadeSimpleDTO(c.getCodigoIbge(), c.getNome()));
+      list.put(c.getCep(), new CidadeSimpleDTO(c.getcodigoIbge(), c.getNome()));
     });
     return list;
   }
@@ -151,9 +185,11 @@ public class CidadeService {
   public Set<String> convertToCepList(Set<Cep> ceps, String newCep) {
     Set<String> list = new HashSet<>();
 
-    list.add(newCep);
+    if (!isNull(newCep)) {
+      list.add(newCep);
+    }
 
-    if (isNull(ceps)) {
+    if (isNull(ceps)){
       return list;
     }
 

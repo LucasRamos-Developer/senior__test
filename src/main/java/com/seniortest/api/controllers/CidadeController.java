@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -25,7 +26,7 @@ import com.seniortest.api.response.TrackingResponse;
 import com.seniortest.api.services.CidadeService;
 
 @RestController
-@RequestMapping(path = "/cidades")
+@RequestMapping(value = "/cidades")
 public class CidadeController {
 
   @Autowired
@@ -33,13 +34,27 @@ public class CidadeController {
 
   @GetMapping
   @ResponseBody
-  public ResponseEntity<PaginationResponse<CidadeSimpleDTO>> getPaged(
-      @RequestParam(name = "page", defaultValue = "1") int page) {
+  public ResponseEntity<PaginationResponse<CidadeSimpleDTO>> getPaged(@RequestParam(name = "page", defaultValue = "1") int page) {
     PaginationResponse<CidadeSimpleDTO> response = cidadeService.getAllPaged(page);
     return ResponseEntity.ok(response);
   }
 
-  @GetMapping(path = { "/{id}" })
+
+  @PostMapping
+  public ResponseEntity<DefaultResponse<CidadeDTO>> create(@RequestBody Cidade cidade){
+    DefaultResponse<CidadeDTO> response = new DefaultResponse<>();
+    try {
+      CidadeDTO newCidade = cidadeService.save(cidade);
+      response.setData(newCidade);
+      response.setMessage("Uma nova cidade adicionada com sucesso");
+      return ResponseEntity.ok(response);
+    } catch (Exception e) {
+      response.setMessage(e.getMessage());
+      return ResponseEntity.badRequest().body(response);
+    }
+  }
+
+  @GetMapping(value = { "/{id}" })
   public ResponseEntity<DefaultResponse<CidadeDTO>> getById(@PathVariable long id) {
     DefaultResponse<CidadeDTO> response = new DefaultResponse<>();
     try {
@@ -53,16 +68,18 @@ public class CidadeController {
       response.setMessage(e.getMessage());
       return ResponseEntity.badRequest().body(response);
     }
- }
+  }
 
-  @PostMapping
-  public ResponseEntity<DefaultResponse<CidadeDTO>> create(@RequestBody Cidade cidade){
+  @PutMapping(value = { "/{id}" })
+  public ResponseEntity<DefaultResponse<CidadeDTO>> update(@PathVariable Long id, @RequestBody Cidade cidade) {
     DefaultResponse<CidadeDTO> response = new DefaultResponse<>();
     try {
-      Cidade newCidade = cidadeService.save(cidade);
-      response.setData(new CidadeDTO(newCidade.getCodigoIBGE(), newCidade.getNome(), newCidade.getUf(), null));
-      response.setMessage("Uma nova cidade adicionada com sucesso");
+      response.setData(cidadeService.findById(id));
+      response.setMessage("Registro Encontratdo");
       return ResponseEntity.ok(response);
+    } catch (RelationException e) {
+      response.setMessage(e.getMessage());
+      return ResponseEntity.notFound().build() ;
     } catch (Exception e) {
       response.setMessage(e.getMessage());
       return ResponseEntity.badRequest().body(response);
