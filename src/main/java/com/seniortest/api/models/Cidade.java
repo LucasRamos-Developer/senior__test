@@ -1,5 +1,6 @@
 package com.seniortest.api.models;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -26,7 +27,7 @@ public class Cidade {
 
   @JsonBackReference
   @OneToMany(mappedBy="cidade", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-  private Set<Cep> ceps;
+  private Set<Cep> ceps = new HashSet<>();
 
   public Cidade() {}
 
@@ -36,11 +37,11 @@ public class Cidade {
     this.uf = uf;
   }
 
-  public Long getcodigoIbge() {
+  public Long getCodigoIbge() {
     return codigoIbge;
   }
 
-  public void setcodigoIbge(Long codigoIbge) {
+  public void setCodigoIbge(Long codigoIbge) {
     this.codigoIbge = codigoIbge;
   }
 

@@ -3,8 +3,10 @@ package com.seniortest.api.controllers;
 import java.util.List;
 
 import javax.management.relation.RelationException;
+import javax.management.relation.RelationNotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,7 +20,6 @@ import org.springframework.http.ResponseEntity;
 
 import com.seniortest.api.dtos.CidadeDTO;
 import com.seniortest.api.dtos.CidadeSimpleDTO;
-import com.seniortest.api.models.Cidade;
 import com.seniortest.api.response.DefaultResponse;
 import com.seniortest.api.response.FilterResponse;
 import com.seniortest.api.response.PaginationResponse;
@@ -41,10 +42,10 @@ public class CidadeController {
 
 
   @PostMapping
-  public ResponseEntity<DefaultResponse<CidadeDTO>> create(@RequestBody Cidade cidade){
+  public ResponseEntity<DefaultResponse<CidadeDTO>> create(@RequestBody CidadeDTO cidade){
     DefaultResponse<CidadeDTO> response = new DefaultResponse<>();
     try {
-      CidadeDTO newCidade = cidadeService.save(cidade);
+      CidadeDTO newCidade = cidadeService.create(cidade);
       response.setData(newCidade);
       response.setMessage("Uma nova cidade adicionada com sucesso");
       return ResponseEntity.ok(response);
@@ -53,6 +54,7 @@ public class CidadeController {
       return ResponseEntity.badRequest().body(response);
     }
   }
+
 
   @GetMapping(value = { "/{id}" })
   public ResponseEntity<DefaultResponse<CidadeDTO>> getById(@PathVariable long id) {
@@ -70,14 +72,15 @@ public class CidadeController {
     }
   }
 
+
   @PutMapping(value = { "/{id}" })
-  public ResponseEntity<DefaultResponse<CidadeDTO>> update(@PathVariable Long id, @RequestBody Cidade cidade) {
+  public ResponseEntity<DefaultResponse<CidadeDTO>> update(@PathVariable Long id, @RequestBody CidadeDTO cidadeDTO) {
     DefaultResponse<CidadeDTO> response = new DefaultResponse<>();
     try {
-      response.setData(cidadeService.findById(id));
+      response.setData(cidadeService.updateById(id, cidadeDTO));
       response.setMessage("Registro Encontratdo");
       return ResponseEntity.ok(response);
-    } catch (RelationException e) {
+    } catch (RelationNotFoundException e) {
       response.setMessage(e.getMessage());
       return ResponseEntity.notFound().build() ;
     } catch (Exception e) {
@@ -85,6 +88,42 @@ public class CidadeController {
       return ResponseEntity.badRequest().body(response);
     }
   }
+
+
+  @DeleteMapping(value ={"/{id}"})
+  public ResponseEntity<DefaultResponse<String>> update(@PathVariable Long id) {
+    DefaultResponse<String> response = new DefaultResponse<>();
+    try {
+      response.setData(cidadeService.deleteById(id));
+      response.setMessage("Registro Deletado");
+      return ResponseEntity.ok(response);
+    } catch (RelationNotFoundException e) {
+      response.setMessage(e.getMessage());
+      return ResponseEntity.notFound().build() ;
+    } catch (Exception e) {
+      response.setMessage(e.getMessage());
+      return ResponseEntity.badRequest().body(response);
+    }
+  }
+
+
+  @PostMapping(value = "/{id}/add-ceps")
+  @ResponseBody
+  public ResponseEntity<DefaultResponse<CidadeDTO>> update(@PathVariable Long id, @RequestBody List<String> ceps) {
+    DefaultResponse<CidadeDTO> response = new DefaultResponse<>();
+    try {
+      response.setData(cidadeService.addCeps(id, ceps));
+      response.setMessage("CEPs Adicionado com sucesso!!");
+      return ResponseEntity.ok(response);
+    } catch (RelationNotFoundException e) {
+      response.setMessage(e.getMessage());
+      return ResponseEntity.notFound().build() ;
+    } catch (Exception e) {
+      response.setMessage(e.getMessage());
+      return ResponseEntity.badRequest().body(response);
+    }
+  }
+
 
   @GetMapping(value = "/search")
   @ResponseBody
@@ -100,6 +139,7 @@ public class CidadeController {
     }
   }
 
+
   @GetMapping(value = "/filter")
   @ResponseBody
   public ResponseEntity<FilterResponse<CidadeSimpleDTO>> filterByUF(@RequestParam(name = "uf") String uf){
@@ -114,6 +154,7 @@ public class CidadeController {
       return ResponseEntity.badRequest().body(response);
     }
   }
+
 
   @GetMapping(value = "/tracking-route")
   @ResponseBody

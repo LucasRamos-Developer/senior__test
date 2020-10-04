@@ -4,5 +4,5 @@ public interface ICidadeWithCepDTO {
   String getCep();
   String getNome();
   String getUf();
-  Long getcodigoIbge();
+  Long getCodigoIbge();
 }

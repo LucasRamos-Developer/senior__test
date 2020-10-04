@@ -19,4 +19,6 @@ public interface CidadeRepository extends JpaRepository<Cidade, Long> {
 
   @Query(value="SELECT cidade.codigo_ibge as codigoIbge, cidade.nome as nome, cidade.uf as uf, cep.numero as cep FROM cidade LEFT JOIN cep ON cidade.codigo_ibge=cep.cidade_codigo WHERE cep.numero IN :ceps", nativeQuery=true)
   public List<ICidadeWithCepDTO> getAllByCeps(@Param("ceps") List<String> ceps);
+
+  public List<Cidade> findByUf(String uf);
 }

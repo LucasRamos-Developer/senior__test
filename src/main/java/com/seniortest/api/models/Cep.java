@@ -21,13 +21,14 @@ public class Cep {
   @JoinColumn(name="cidade_codigo", nullable = false)
   private Cidade cidade;
 
-  public Cep() {}
+  public Cep() {
+
+  }
 
   public Cep(String numero, Cidade cidade) {
     this.numero = numero;
     this.cidade = cidade;
   }
-
 
   public String getNumero() {
     return numero;

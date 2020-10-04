@@ -1,20 +1,15 @@
 package com.seniortest.api.services;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import com.seniortest.api.dtos.CidadeSimpleDTO;
-import com.seniortest.api.repositories.CidadeRepository;
-
 
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -23,10 +18,10 @@ public class CidadeServiceTest {
   public HashMap<String,CidadeSimpleDTO> getCidades() {
     HashMap<String,CidadeSimpleDTO> list = new HashMap<>();
 
-    list.put("001", new CidadeSimpleDTO((long) 001, "Cidade 01"));
-    list.put("002", new CidadeSimpleDTO((long) 002, "Cidade 02"));
-    list.put("003", new CidadeSimpleDTO((long) 002, "Cidade 02"));
-    list.put("004", new CidadeSimpleDTO((long) 004, "Cidade 03"));
+    list.put("001", new CidadeSimpleDTO((long) 001, "Cidade 01", "A"));
+    list.put("002", new CidadeSimpleDTO((long) 002, "Cidade 02", "B"));
+    list.put("003", new CidadeSimpleDTO((long) 002, "Cidade 02", "B"));
+    list.put("004", new CidadeSimpleDTO((long) 004, "Cidade 03", "A"));
 
     return list;
   }
@@ -61,7 +56,7 @@ public class CidadeServiceTest {
 
     CidadeSimpleDTO cidade = list.get(2);
 
-    assertEquals(cidade.getCodigoIBGE(), cidades.get("004").getCodigoIBGE());
+    assertEquals(cidade.getCodigoIbge(), cidades.get("004").getCodigoIbge());
   }
   
 }
