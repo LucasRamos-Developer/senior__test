@@ -106,9 +106,11 @@ public class CidadeService {
     PageRequest pageRequest = PageRequest.of(offset                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               , size, Sort.Direction.ASC, "nome");
     Page<Cidade> cidades = cidadeRepo.findAll(pageRequest);
     
-    response.setData(this.convertToCidadesSimpleDTO(cidades.getContent()));
+    response.setData(this.toListCidadeSimpleDTO(cidades.toList()));
     response.setPage(page);
     response.setSize(size);
+    response.setTotalPages(cidades.getTotalPages());
+    response.setTotalElements(cidades.getNumberOfElements());
 
     return response;
   }
@@ -183,7 +185,7 @@ public class CidadeService {
    * Retorna a lista de cidades baseada no CEP
    */
   public List<CidadeSimpleDTO> getRouteByCeps(List<String> ceps) {
-    HashMap<String,CidadeSimpleDTO> cidades = this.convertToCidadeWithCepDTO(cidadeRepo.getAllByCeps(ceps));
+    HashMap<String,CidadeSimpleDTO> cidades = this.toHashMapCidadeWithCepDTO(cidadeRepo.getAllByCeps(ceps));
     return this.getCidadesUniqueList(cidades, ceps);
   }
 
@@ -218,7 +220,7 @@ public class CidadeService {
   /**
    * Convert uma lista de cidade para uma lista de cidade sem o CEP
    */
-  public List<CidadeSimpleDTO> convertToCidadesSimpleDTO(List<Cidade> cidades) {
+  public List<CidadeSimpleDTO> toListCidadeSimpleDTO(List<Cidade> cidades) {
     List<CidadeSimpleDTO> list = new ArrayList<>();
     cidades.forEach(c -> list.add(new CidadeSimpleDTO(c.getCodigoIbge(), c.getNome(), c.getUf())));
     return list;
@@ -227,7 +229,7 @@ public class CidadeService {
   /**
    * Pega o retorno da consulta e transforma num hash map com o cep como chave
   */
-  public HashMap<String,CidadeSimpleDTO> convertToCidadeWithCepDTO(List<ICidadeWithCepDTO> cidades) {
+  public HashMap<String,CidadeSimpleDTO> toHashMapCidadeWithCepDTO(List<ICidadeWithCepDTO> cidades) {
   HashMap<String,CidadeSimpleDTO> list = new HashMap<>();
     cidades.forEach(c -> {
       list.put(c.getCep(), new CidadeSimpleDTO(c.getCodigoIbge(), c.getNome(), c.getUf()));

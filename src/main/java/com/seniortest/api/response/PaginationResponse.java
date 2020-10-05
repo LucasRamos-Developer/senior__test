@@ -9,6 +9,10 @@ public class PaginationResponse<T> {
 
   private Integer page = 0;
 
+  private Integer totalPages = 1;
+
+  private Integer totalElements = 1;
+
 	public List<T> getData() {
 		return data;
   }
@@ -33,4 +37,19 @@ public class PaginationResponse<T> {
     this.page = page;
   }
 
+  public Integer getTotalPages() {
+    return totalPages;
+  }
+
+  public void setTotalPages(Integer totalPage) {
+    this.totalPages = totalPage;
+  }
+
+  public Integer getTotalElements() {
+    return totalElements;
+  }
+
+  public void setTotalElements(Integer totalElements) {
+    this.totalElements = totalElements;
+  }
 }
